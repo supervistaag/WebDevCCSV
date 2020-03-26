@@ -33,6 +33,13 @@ class App extends React.Component {
     results:[],
     darkMode: false,
   }
+
+  componentDidMount() {
+      this.setState({
+        results: result.data
+      });
+  }
+
   findResults=(inputSphere)=>{
     this.setState({results:result.data})
   }
