@@ -31,34 +31,63 @@ const theme = createMuiTheme({
 console.log("data is here", result.data);
 
 // get the products as an array of objects for less typing/better readibility
-// pass it to the results state as initial value
-// so that they will be displayed when the page first loads
+
 const products = result.data;
 
 class App extends React.Component {
+  // inputCylinder and inputAddition added to state for search criteria
   state = {
     inputSphere: 0,
-    results: products,
+    results: [],
     darkMode: false,
     inputCylinder: 0,
     inputAddition: 0
   };
 
-  // filter the products based on user input and update the state
-  findResults = inputSphere => {
-    let filteredProducts = products.filter(product => {
-      if (inputSphere > product.minSphere && inputSphere < product.maxSphere)
-        return true;
+  // componentDidMount added so that all products will be displayed when the page first loads
+
+  componentDidMount() {
+    this.setState({
+      results: products
     });
+  }
+  // filter the products based on user input and update the state
+  findResults = (inputSphere, inputCylinder, inputAddition) => {
+    // checks if user enters a value, otherwise search criteria will be falsy value and it will check the following filter condition
+    const finalResult = products
+      .filter(product => {
+        if (!inputSphere) return true;
+        else
+          return (
+            inputSphere >= product.minSphere && inputSphere <= product.maxSphere
+          );
+      })
+      .filter(product => {
+        if (!inputCylinder) return true;
+        else
+          return (
+            inputCylinder >= product.minCylinder &&
+            inputCylinder <= product.maxCylinder
+          );
+      })
+      .filter(product => {
+        if (!inputAddition) return true;
+        else
+          return (
+            inputAddition >= product.minAddition &&
+            inputAddition <= product.maxAddition
+          );
+      });
 
-    console.log("filtered: ", filteredProducts);
-
-    this.setState({ results: filteredProducts });
+    this.setState({ results: finalResult });
   };
 
   onSearch = () => {
     // console.log("to be done");
-    this.findResults(this.state.inputSphere);
+    // gets all search filter values from state and pass them to findResults function
+    const { inputSphere, inputCylinder, inputAddition } = this.state;
+
+    this.findResults(inputSphere, inputCylinder, inputAddition);
   };
   onChange = (key, value) => {
     this.setState({ [key]: value });
@@ -71,9 +100,6 @@ class App extends React.Component {
   };
 
   render() {
-    // add inputSphere and inputAddition variables as search values
-    // pass these props to Inputfield to be used in findResults()
-
     const {
       darkMode,
       inputSphere,
@@ -82,21 +108,21 @@ class App extends React.Component {
       inputAddition
     } = this.state;
 
+    // searchField object has been created to pass values to InputField as an array so that no need create more props for each input
     const searchFields = {
       inputField: [inputSphere, inputCylinder, inputAddition],
       name: ["inputSphere", "inputCylinder", "inputAddition"],
       label: ["Sphere", "Cylinder", "Addition"]
     };
 
-    // console.log("names", searchFields.name);
     return (
       <ThemeProvider theme={theme}>
         <div className={darkMode ? "AppDark" : "AppLight"}>
           <Grid className="searchField">
             <InputField
-              inputField={searchFields.inputField} //{inputSphere} //
-              name={searchFields.name} //"inputSphere" //
-              label={searchFields.label} //"Sphere" //
+              inputField={searchFields.inputField}
+              name={searchFields.name}
+              label={searchFields.label}
               onChange={this.onChange}
             />
             <SearchButton onSearch={this.onSearch} />
