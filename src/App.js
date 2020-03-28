@@ -40,14 +40,30 @@ class App extends React.Component {
       });
   }
 
-  findResults=(inputSphere)=>{
-    this.setState({results:result.data})
-  }
+  findResults = (inputSphere) => {
+    let resultList = []
+    const productList = [...this.state.results];
+
+   productList.map(result => {
+    if (inputSphere <= result.maxSphere && inputSphere >= result.minSphere) {
+      return  resultList.push(result)
+    } else {
+      return resultList;
+    }
+  });
+  this.setState({results:resultList})
+}
+
   onSearch=()=>{
+  
+    this.findResults(this.state.inputSphere)
+
     console.log("to be done")
   }
-  onChange=(key,value)=>{
-    this.setState({[key]:value})
+  onChange=( key,value)=>{
+
+    this.setState({  [key]:value})
+
   }
   toggledarkMode=()=>{
     this.setState({
@@ -65,6 +81,7 @@ class App extends React.Component {
             name="inputSphere"
             label="Sphere"
             onChange={this.onChange}
+            value={inputSphere}
           />
           <SearchButton
             onSearch={this.onSearch}
