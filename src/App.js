@@ -30,6 +30,11 @@ const theme = createMuiTheme({
 class App extends React.Component {
   state = {
     inputSphere: 0,
+    inputCylinder: 0,
+    inputAddition: 0,
+    isSphereTouched: false,
+    isCylinderTouched: false,
+    isAdditionTouched: false,
     results: [],
     darkMode: false
   };
@@ -39,27 +44,58 @@ class App extends React.Component {
       results: result.data
     });
   }
-
-  findResults = inputSphere => {
-    let resultList = [];
-    const productList = [...this.state.results];
-
-    productList.map(result => {
-      if (inputSphere <= result.maxSphere && inputSphere >= result.minSphere) {
-        return resultList.push(result);
-      } else {
-        return resultList;
-      }
+  findResults = (inputSphere, inputCylinder, inputAddition) => {
+    this.setState({
+      results: this.state.results.filter(e => {
+        if (!this.state.isSphereTouched) {
+          return (
+            inputCylinder <= e.maxCylinder &&
+            inputCylinder >= e.minCylinder &&
+            inputAddition <= e.maxAddition &&
+            inputAddition >= e.minAddition
+          );
+        } else if (!this.state.isCylinderTouched) {
+          return (
+            inputSphere <= e.maxSphere &&
+            inputSphere >= e.minSphere &&
+            inputAddition <= e.maxAddition &&
+            inputAddition >= e.minAddition
+          );
+        } else if (!this.state.isAdditionTouched) {
+          return (
+            inputSphere <= e.maxSphere &&
+            inputSphere >= e.minSphere &&
+            inputCylinder <= e.maxCylinder &&
+            inputCylinder >= e.minCylinder
+          );
+        } else {
+          return (
+            this.state.isSphereTouched &&
+            inputSphere <= e.maxSphere &&
+            inputSphere >= e.minSphere &&
+            inputCylinder <= e.maxCylinder &&
+            inputCylinder >= e.minCylinder &&
+            inputAddition <= e.maxAddition &&
+            inputAddition >= e.minAddition
+          );
+        }
+      })
     });
-    this.setState({ results: resultList });
   };
 
   onSearch = () => {
-    this.findResults(this.state.inputSphere);
+    this.findResults(this.state.inputSphere, this.state.inputCylinder, this.state.inputAddition);
     console.log("clicks search button");
   };
+
   onChange = (key, value) => {
     this.setState({ [key]: value });
+    console.log("touched", [key]);
+    this.setState({
+      isSphereTouched: key === "inputSphere" ? true : false,
+      isCylinderTouched: key === "inputCylinder" ? true : false,
+      isAdditionTouched: key === "inputAddition" ? true : false
+    });
   };
   toggledarkMode = () => {
     this.setState({
@@ -67,7 +103,14 @@ class App extends React.Component {
     });
   };
   render() {
-    const { darkMode, inputSphere, results } = this.state;
+    const {
+      darkMode,
+      inputSphere,
+      inputCylinder,
+      inputAddition,
+      results
+    } = this.state;
+    console.log("", this.state.isSphereTouched);
     return (
       <ThemeProvider theme={theme}>
         <div className={darkMode ? "AppDark" : "AppLight"}>
@@ -77,13 +120,34 @@ class App extends React.Component {
               name="inputSphere"
               label="Sphere"
               onChange={this.onChange}
-              value={inputSphere}
+              type="number"
             />
+            <InputField
+              inputField={inputCylinder}
+              name="inputCylinder"
+              label="Cylinder"
+              onChange={this.onChange}
+              type="number"
+            />
+            <InputField
+              inputField={inputAddition}
+              name="inputAddition"
+              label="Addition"
+              onChange={this.onChange}
+              type="number"
+            />
+
             <SearchButton onSearch={this.onSearch} />
           </Grid>
-          <Grid className={darkMode ? "serchResult" : "serchResultLight"}>
-            <ShowResults results={results} />
-          </Grid>
+          {this.state.results.length === 0 ? (
+            <div>
+              <p>Sorry, no results found.</p>
+            </div>
+          ) : (
+            <Grid className={darkMode ? "serchResult" : "serchResultLight"}>
+              <ShowResults results={results} />
+            </Grid>
+          )}
           <SwitchStyle
             darkMode={this.state.darkMode}
             toggledarkMode={this.toggledarkMode}
