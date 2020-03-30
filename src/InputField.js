@@ -15,7 +15,7 @@ class InputFields extends React.Component{
                 label={label}
                 color={darkMode && 'secondary'}
                 inputProps={{
-                    style:{color: darkMode && "#02e2f2"}
+                    style:{color: darkMode &&  "#02e2f2"}
                 }}
                 InputLabelProps={{
                     style:{color: darkMode && "#02e2f2"}

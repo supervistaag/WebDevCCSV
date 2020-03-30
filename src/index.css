@@ -114,6 +114,6 @@ body {
   margin-right: 10px;
 }
 .inputWrapLight:nth-child(1){
-  background: #f6f6f6;
+  /* background: #f6f6f6; */
   border-radius: 4px;
 }
