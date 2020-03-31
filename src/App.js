@@ -29,12 +29,9 @@ const theme = createMuiTheme({
 
 class App extends React.Component {
   state = {
-    inputSphere: 0,
-    inputCylinder: 0,
-    inputAddition: 0,
-    isSphereTouched: false,
-    isCylinderTouched: false,
-    isAdditionTouched: false,
+    inputSphere: "",
+    inputCylinder: "",
+    inputAddition: "",
     results: [],
     darkMode: false
   };
@@ -47,21 +44,21 @@ class App extends React.Component {
   findResults = (inputSphere, inputCylinder, inputAddition) => {
     this.setState({
       results: this.state.results.filter(e => {
-        if (!this.state.isSphereTouched) {
+        if (this.state.inputSphere === "") {
           return (
             inputCylinder <= e.maxCylinder &&
             inputCylinder >= e.minCylinder &&
             inputAddition <= e.maxAddition &&
             inputAddition >= e.minAddition
           );
-        } else if (!this.state.isCylinderTouched) {
+        } else if (this.state.inputCylinder === "") {
           return (
             inputSphere <= e.maxSphere &&
             inputSphere >= e.minSphere &&
             inputAddition <= e.maxAddition &&
             inputAddition >= e.minAddition
           );
-        } else if (!this.state.isAdditionTouched) {
+        } else if (this.state.inputAddition === "") {
           return (
             inputSphere <= e.maxSphere &&
             inputSphere >= e.minSphere &&
@@ -70,7 +67,6 @@ class App extends React.Component {
           );
         } else {
           return (
-            this.state.isSphereTouched &&
             inputSphere <= e.maxSphere &&
             inputSphere >= e.minSphere &&
             inputCylinder <= e.maxCylinder &&
@@ -84,24 +80,28 @@ class App extends React.Component {
   };
 
   onSearch = () => {
-    this.findResults(this.state.inputSphere, this.state.inputCylinder, this.state.inputAddition);
-    console.log("clicks search button");
+    this.findResults(
+      this.state.inputSphere,
+      this.state.inputCylinder,
+      this.state.inputAddition
+    );
+    if (this.state.inputSphere === "" && this.state.inputCylinder === "" && this.state.inputAddition === "") {
+      this.setState({
+        results: result.data
+      });
+    }
   };
 
   onChange = (key, value) => {
     this.setState({ [key]: value });
-    console.log("touched", [key]);
-    this.setState({
-      isSphereTouched: key === "inputSphere" ? true : false,
-      isCylinderTouched: key === "inputCylinder" ? true : false,
-      isAdditionTouched: key === "inputAddition" ? true : false
-    });
   };
+
   toggledarkMode = () => {
     this.setState({
       darkMode: !this.state.darkMode
     });
   };
+  
   render() {
     const {
       darkMode,
@@ -110,7 +110,9 @@ class App extends React.Component {
       inputAddition,
       results
     } = this.state;
-    console.log("", this.state.isSphereTouched);
+
+  
+
     return (
       <ThemeProvider theme={theme}>
         <div className={darkMode ? "AppDark" : "AppLight"}>
